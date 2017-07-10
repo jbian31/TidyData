@@ -48,4 +48,4 @@ df_result <- group_by(df_final,Activity,Subject,Feature,Axial) %>%
                        , mean_meanFreq = mean(meanFreq, na.rm = TRUE)
                        ,mean_std = mean(std, na.rm = TRUE))
 
-View(df_result)  
+write.table(df_result,"~/R/project1/Result_Data.txt", row.name=FALSE) 
