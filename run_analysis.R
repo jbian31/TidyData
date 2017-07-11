@@ -1,12 +1,18 @@
 library(dplyr)
 library(tidyr)
 library(stringr)
-#test dataset
-df1 <- read.table("~/R/project1/test/x_test.txt") %>% tbl_df()
-df2 <- read.table("~/R/project1/test/y_test.txt") %>% tbl_df() 
-df3 <- read.table("~/R/project1/test/subject_test.txt") %>% tbl_df() 
 
-dff <- read.table("~/R/project1/features.txt") %>% tbl_df() 
+#download
+download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip", "data.zip")
+unzip("data.zip",exdir="data")
+setwd("./data/UCI HAR Dataset")
+
+#test dataset
+df1 <- read.table(paste(getwd(),"/test/X_test.txt", sep="")) %>% tbl_df()
+df2 <- read.table(paste(getwd(),"/test/Y_test.txt", sep="")) %>% tbl_df() 
+df3 <- read.table(paste(getwd(),"/test/subject_test.txt", sep="")) %>% tbl_df() 
+
+dff <- read.table(paste(getwd(),"/features.txt", sep="")) %>% tbl_df() 
 df_col <- dff[str_detect(dff$V2,(c("mean","std"))),]
 
 df1 <-  df1[,df_col$V1]
@@ -15,9 +21,9 @@ df_test <- cbind(df3,df2,df1)
 names(df_test) [1:2] <- c("Subject","Activity") 
 
 #train dataset
-df1 <- read.table("~/R/project1/train/x_train.txt") %>% tbl_df()
-df2 <- read.table("~/R/project1/train/y_train.txt") %>% tbl_df() 
-df3 <- read.table("~/R/project1/train/subject_train.txt") %>% tbl_df() 
+df1 <- read.table(paste(getwd(),"/train/X_train.txt", sep="")) %>% tbl_df()
+df2 <- read.table(paste(getwd(),"/train/Y_train.txt", sep="")) %>% tbl_df() 
+df3 <- read.table(paste(getwd(),"/train/subject_train.txt", sep="")) %>% tbl_df() 
 
 df1 <-  df1[,df_col$V1]
 names(df1) <- df_col$V2
@@ -29,7 +35,7 @@ df <- rbind(df_test,df_train) %>% unique()
 rm(df1,df2,df3)
 
 #add activity name
-df1 <- read.table("~/R/project1/activity_labels.txt") %>% tbl_df()
+df1 <- read.table(paste(getwd(),"/activity_labels.txt", sep="")) %>% tbl_df()
 df <- merge(df1,df,by.x = "V1", by.y ="Activity", all.x = TRUE) %>% select(-1)
 
 names(df)[1] = c("Activity")
@@ -48,4 +54,4 @@ df_result <- group_by(df_final,Activity,Subject,Feature,Axial) %>%
                        , mean_meanFreq = mean(meanFreq, na.rm = TRUE)
                        ,mean_std = mean(std, na.rm = TRUE))
 
-write.table(df_result,"~/R/project1/Result_Data.txt", row.name=FALSE) 
+write.table(df_result,paste(getwd(),"/Result_Data.txt", sep=""), row.name=FALSE) 
